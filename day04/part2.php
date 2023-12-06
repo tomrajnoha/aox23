@@ -4,7 +4,11 @@
     $file_array = explode("\n", $file_content);
 
     $total = 0;
-    foreach ($file_array as $line) {
+    $line_copies = [];
+    foreach ($file_array as $line_no => $line) {
+        $line_copies[$line_no] = 1;
+    }
+    foreach ($file_array as $line_no => $line) {
         $sep1 = explode(':', $line);
         $sep2 = explode('|', $sep1[1]);
         $winning = explode(' ', trim($sep2[0]));
@@ -13,8 +17,15 @@
         if (count($happy) <= 0) {
             continue;
         }
-        $score = pow(2, count($happy)-1);
-        $total += $score;
+        //echo "Line #{$line_no}:" . PHP_EOL;
+        //echo json_encode(['winning' => $winning, 'actual' => $actual, 'intersect' => $happy, 'cnt' => count($happy)], JSON_PRETTY_PRINT) . PHP_EOL;
+        for ($i = 1; $i <= count($happy); $i++) {
+            $line_copies[$line_no+$i] += $line_copies[$line_no];
+        }
+    }
+    echo json_encode($line_copies, JSON_PRETTY_PRINT) . PHP_EOL;
+    foreach ($line_copies as $line_no => $oneline_copies) {
+        $total += $oneline_copies;
     }
 
     echo $total . PHP_EOL;
